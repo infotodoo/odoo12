@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2019 Odoo Inc -->
+<odoo>
+    <data>
+        <template id="report_payslip_hr_co_payroll" inherit_id="hr_payroll.report_payslip">
+            <p t-field="o.name" position="replace">
+                <div class="row">
+                    <span t-field="o.name" class="col-xs-6"/>
+                    <span class="col-xs-6 text-right pull-right">
+                        <strong>Reference</strong> <t t-esc="o.number"/>
+                    </span>
+                </div>
+                <br/>
+            </p>
+            <xpath expr="//tr[@t-foreach]" position="attributes">
+                <attribute name="t-foreach">o.line_ids.filtered(lambda line: line.salary_rule_id.print_on_payslip_report and line.appears_on_payslip and line.total)</attribute>
+            </xpath>
+            <!-- remove address -->
+            <xpath expr="//table/tr[2]" position="replace">
+                <tr>
+                    <td><strong>Identification No</strong></td>
+                    <td><span t-field="o.employee_id.identification_id"/></td>
+                    <td><strong>Bank Account</strong></td>
+                    <td><span t-field="o.employee_id.bank_account_id"/></td>
+                </tr>
+            </xpath>
+            <!-- remove email + id nr -->
+            <xpath expr="//table/tr[3]" position="replace"/>
+            <!-- remove bank account -->
+            <xpath expr="//table/tr[3]" position="replace"/>
+
+            <!-- add worked days -->
+            <p class="text-right" position="replace">
+                <h3>Días Trabajados</h3>
+                <table class="table table-condensed">
+                    <thead>
+                        <tr>
+                            <th>Descripción</th>
+                            <th>Código</th>
+                            <th>Número de Días</th>
+                            <th>Número de Horas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="o.worked_days_line_ids.filtered('number_of_hours')" t-as="worked_day">
+                            <td><span t-field="worked_day.name"/></td>
+                            <td><span t-field="worked_day.code"/></td>
+                            <td><span t-field="worked_day.number_of_days"/></td>
+                            <td><span t-field="worked_day.number_of_hours"/></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </p>
+        </template>
+    </data>
+</odoo>
