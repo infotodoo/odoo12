@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2019 Odoo Inc -->
+<odoo>
+    <data noupdate="1">
+        <record id="contract_warning_co_payroll" model="mail.template">
+            <field name="name">Contract expiration warning</field>
+            <field name="subject">Contrato ${object.name} próximo a vencer</field>
+            <field name="email_from">admin@example.com</field>
+            <field name="email_to">admin@example.com</field>
+            <field name="lang">es_CO</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="model_id" ref="hr_contract.model_hr_contract"/>
+            <field name="user_signature" eval="0"/>
+            <field name="body_html"><![CDATA[<p>Le informamos que el siguiente contrato está próximo a vencer:</p>
+<br/>
+<p>
+Contrato: ${object.name}<br/>
+Fecha de Vencimiento: ${object.date_end or '/'}<br/>
+Título del Trabajo: ${(object.job_id and object.job_id.name) or '/'}<br/>
+Departamento: ${(object.department_id and object.department_id.name) or '/'}<br/>
+Tipo de Contrato: ${object.type_id.name}<br/>
+</p>
+<br/>
+<p>Favor de tomar acción.</p>
+</p>]]>
+            </field>
+        </record>
+
+        <record id="action_warning_email_co_payroll" model="ir.actions.server">
+            <field name="name">Send warning email before contract expiration</field>
+            <field name="model_id" ref="model_hr_contract"/>
+            <field name="type">ir.actions.server</field>
+            <field name="state">email</field>
+            <field name="template_id" ref="contract_warning_co_payroll"/>
+        </record>
+
+        <record id="rule_send_warning_email_co_payroll" model="base.automation">
+            <field name="name">Send warning email before contract expiration</field>
+            <field name="model_id" ref="base_automation.model_base_automation_lead_test"/>
+            <field name="state">code</field>
+            <field name="action_server_id" ref="action_warning_email_co_payroll"/>
+            <field name="trigger">on_time</field>
+            <field name="active" eval="True"/>
+            <field name="model_id" ref="model_hr_contract"/>
+            <field name="filter_domain">[('state', '=', 'open')]</field>
+            <field name="trg_date_id" ref="hr_contract.field_hr_contract__date_end"/>
+            <field name="trg_date_range">-45</field>
+            <field name="trg_date_range_type">day</field>
+        </record>
+    </data>
+</odoo>
