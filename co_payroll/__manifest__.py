@@ -16,6 +16,7 @@
         "account_batch_payment",
         "base_automation",
         "base_address_city",
+	"account_check_printing",
     ],
     "data": [
         "data/hr.xml",
